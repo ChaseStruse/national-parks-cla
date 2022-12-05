@@ -11,8 +11,14 @@ class ApiService:
     def get_parks_by_state(self, state_code):
         url = self.baseurl + f'/parks?limit=5&stateCode={state_code}&api_key={self.api_key}'
         response = requests.get(url)
-        park = self.data_conversion_service.convert_parks_json_to_name_description_dict(response.json())
-        return park
+        return self.data_conversion_service.convert_parks_json_to_name_description_dict(response.json())
+
+    def get_park_by_name_and_state(self, state_code, park_name):
+        park_name_url = park_name.replace(' ', '%20')
+        url = self.baseurl + f'/parks?limit=5&stateCode={state_code}&q={park_name_url}&api_key={self.api_key}'
+        response = requests.get(url)
+        return self.data_conversion_service.convert_parks_json_to_national_park_object(response.json(), park_name)
+
 
 
 
