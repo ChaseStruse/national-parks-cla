@@ -1,6 +1,8 @@
 import json
 import unittest
 from unittest import TestCase
+
+from src.classes.national_park import NationalPark
 from src.services.data_conversion_service import DataConversionService
 
 
@@ -15,6 +17,39 @@ class TestDataConversionService(TestCase):
         expected = {'Test Park': 'Test Description', 'Test Park 2': 'Test Description 2'}
         actual = self._sut.convert_parks_json_to_name_description_dict(json.loads(test_json))
         self.assertEqual(actual, expected)
+
+    def test_given_one_park_convert_parks_json_to_national_park_object_returns_correct_object(self):
+        test_json = ('{ "total": "1", "data": [{ "fullName": "Test Park", "description": "Test Description", '
+                     '"activities": [{ "name": "act1" }, { "name": "act2" }, { "name": "act3" }] }] }')
+        activity_list = ["act1", "act2", "act3"]
+        expected = NationalPark("Test Park", "Test Description", activity_list)
+        actual = self._sut.convert_parks_json_to_national_park_object(json.loads(test_json), "Test Name")
+        self.assertEqual(expected.name, actual.name)
+        self.assertEqual(expected.description, actual.description)
+        self.assertEqual(expected.activities, actual.activities)
+
+    def test_given_two_parks_convert_parks_json_to_national_park_object_returns_correct_object(self):
+        test_json = ('{ "total": "2", "data": [{ "fullName": "Test Park", "description": "Test Description", '
+                     '"activities": [{ "name": "act1" }, { "name": "act2" }, { "name": "act3" }] },'
+                     '{"fullName": "Test Park 2", "description": "Test Description 2", '
+                     '"activities": [{ "name": "act10" }, { "name": "act20" }, { "name": "act30" }]} ] }')
+        activity_list = ["act10", "act20", "act30"]
+        expected = NationalPark("Test Park 2", "Test Description 2", activity_list)
+        actual = self._sut.convert_parks_json_to_national_park_object(json.loads(test_json), "Test Park 2")
+        self.assertEqual(expected.name, actual.name)
+        self.assertEqual(expected.description, actual.description)
+        self.assertEqual(expected.activities, actual.activities)
+
+    def test_given_incorrect_name_convert_parks_json_to_national_park_object_returns_empty_object(self):
+        test_json = ('{ "total": "2", "data": [{ "fullName": "Test Park", "description": "Test Description", '
+                     '"activities": [{ "name": "act1" }, { "name": "act2" }, { "name": "act3" }] },'
+                     '{"fullName": "Test Park 2", "description": "Test Description 2", '
+                     '"activities": [{ "name": "act10" }, { "name": "act20" }, { "name": "act30" }]} ] }')
+        expected = NationalPark()
+        actual = self._sut.convert_parks_json_to_national_park_object(json.loads(test_json), "Null Park")
+        self.assertEqual(expected.name, actual.name)
+        self.assertEqual(expected.description, actual.description)
+        self.assertEqual(expected.activities, actual.activities)
 
 
 if __name__ == '__main__':
