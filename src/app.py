@@ -11,7 +11,7 @@ def print_command_menu():
     print('Please select from the list of commands below: \n')
     print('1. Get parks in your state')
     print('2. Get park and activities (Requires park name and state abbreviation)')
-    print('3. ')
+    print('3. Get parks amenities (Requires park name and state abbreviation)')
     print('4. ')
 
 
@@ -52,6 +52,23 @@ def print_park_information():
         print_park_information()
 
 
+def print_park_amenities():
+    try:
+        state_abbrev = input('Please enter state abbreviation(ex: CA): ')
+        park_name = input('Please enter park name: ')
+        amenities = api_service.get_parks_amenities_by_park_name_and_state(state_abbrev, park_name)
+
+        print('___________________________')
+        for amenity in amenities:
+            print(f'Amenity: {amenity.name}\n')
+            print(*amenity.locations_available, ', ')
+            print('___________________________')
+        input('Press enter to continue')
+    except ValueError:
+        print('Please check input and try again \n')
+        print_park_amenities()
+
+
 def main_loop():
     keep_using = True
     print('Welcome to National Parks Command Line Application \n')
@@ -66,6 +83,9 @@ def main_loop():
 
             elif selection == 2:
                 print_park_information()
+
+            elif selection == 3:
+                print_park_amenities()
 
             elif selection == 0:
                 print('Thank you for using the application!')

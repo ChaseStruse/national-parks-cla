@@ -1,4 +1,5 @@
 from src.classes.national_park import NationalPark
+from src.classes.national_park_amenity import NationalParkAmenity
 
 
 class DataConversionService:
@@ -27,3 +28,35 @@ class DataConversionService:
                     park.activities = [act['name'] for act in park_info['activities']]
 
         return park
+
+    @staticmethod
+    def convert_park_amenities_json_to_list(json):
+        data = json['data']
+        list_of_amenities = []
+
+        for amenity in data:
+            name = amenity[0]['name']
+            locations = []
+            for park in amenity[0]['parks'][0]['places']:
+                locations.append(park['title'])
+            list_of_amenities.append(NationalParkAmenity(name, locations))
+        return list_of_amenities
+
+    @staticmethod
+    def get_park_code_from_parks_json(json, park_name):
+        total_responses = int(json['total'])
+        data = json['data']
+        park_code = ''
+
+        if total_responses == 1:
+            park_code = data[0]['parkCode']
+
+        elif total_responses > 1:
+            for park_info in data:
+                if park_info['fullName'] == park_name:
+                    park_code = park_info['parkCode']
+
+        return park_code
+
+
+
